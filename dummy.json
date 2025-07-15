@@ -1,0 +1,31 @@
+
+{
+"userId": "user#123",// Partition Key
+"bookingId": "booking#456",// Sort Key
+"creatorId": "creator#789",// GSI1 PK
+"startTime": "2025-07-01 21:00:00",// GSI1/GSI2 SK
+"endTime": "2025-07-01 22:00:00",
+"timezone": "Australia/Brisbane","status": "confirmed",
+// or cancelled, missed, etc.
+"isRecurring": true,
+"recurrenceRule": "FREQ=WEEKLY;BYDAY=TU",
+"notificationsEnabled": {
+"fan":
+{ "reminder": true, "update": false },
+"creator": { "reminder": true, "update": true }
+},
+"adminNotes": "Initial booking via chat",
+"calendarSync": {
+"google": true,
+"iCalExported": false
+},
+"createdAt": "2025-06-27 15:00:00",
+"createdByIp": "123.123.123.123",
+"auditTrail": [
+{
+"timestamp": "2025-06-27 15:00:00",
+"action": "created",
+"actor": "user#123"
+}
+]
+}

@@ -1,0 +1,32 @@
+// RedisWrapper.js (Dummy Version)
+
+const store = new Map();
+const expirations = new Map();
+
+const RedisWrapper = {
+  async get(key) {
+    return store.has(key) ? store.get(key) : null;
+  },
+
+  async set(key, value, ttlSeconds) {
+    store.set(key, value);
+    if (expirations.has(key)) {
+      clearTimeout(expirations.get(key));
+    }
+    const timeout = setTimeout(() => {
+      store.delete(key);
+      expirations.delete(key);
+    }, ttlSeconds * 1000);
+    expirations.set(key, timeout);
+  },
+
+  async del(key) {
+    store.delete(key);
+    if (expirations.has(key)) {
+      clearTimeout(expirations.get(key));
+      expirations.delete(key);
+    }
+  },
+};
+
+export default RedisWrapper;

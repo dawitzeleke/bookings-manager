@@ -1,0 +1,44 @@
+# scylla db docker compose file
+
+version: '3.8'
+
+services:
+  scylla:
+    image: scylladb/scylla:latest
+    container_name: scylla-node
+    ports:
+      - "9042:9042"  # CQL port
+      - "8000:8000"  # Alternator endpoint (DynamoDB compatible)
+      - "7002:7000"  # Inter-node communication
+      - "7001:7001"  # SSL inter-node communication
+      - "9160:9160"  # Thrift port
+    environment:
+      - SCYLLA_ALTERNATOR_PORT=8000
+      - SCYLLA_ALTERNATOR_ADDRESS=0.0.0.0
+      - SCYLLA_ALTERNATOR_WRITE_ISOLATION=always
+    volumes:
+      - scylla_data:/var/lib/scylla
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    command: >
+      --smp 1
+      --memory 750M
+      --alternator-port 8000
+      --alternator-address 0.0.0.0
+      --alternator-write-isolation always
+      --developer-mode 1
+    networks:
+      - scylla_network
+    healthcheck:
+      test: ["CMD", "cqlsh", "-u", "cassandra", "-p", "cassandra", "-e", "DESCRIBE keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+volumes:
+  scylla_data:
+    driver: local
+
+networks:
+  scylla_network:
+    driver: bridge

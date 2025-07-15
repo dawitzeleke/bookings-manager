@@ -1,0 +1,17 @@
+{
+    "name": "yz/comp",
+    "autoload": {
+        "psr-4": {
+            "Yz\\Comp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "yonatan-h",
+            "email": "yon019hl@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.9"
+    }
+}

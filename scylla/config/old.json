@@ -1,0 +1,52 @@
+{
+  "products": {
+    "PK": "id",
+    "SK": "category",
+    "columns": {
+      "id": { "type": "S", "description": "Unique product identifier" },
+      "category": { "type": "S", "description": "Product category" },
+      "name": { "type": "S", "description": "Product name" },
+      "description": { "type": "S", "description": "Product description" },
+      "price": { "type": "N", "description": "Product price" },
+      "currency": {
+        "type": "S",
+        "description": "Price currency (USD, EUR, etc.)"
+      },
+      "stock": { "type": "N", "description": "Available stock quantity" },
+      "sku": { "type": "S", "description": "Stock keeping unit" },
+      "brand": { "type": "S", "description": "Product brand" },
+      "images": { "type": "S", "description": "Comma-separated image URLs" },
+      "tags": { "type": "S", "description": "Comma-separated tags" },
+      "weight": { "type": "N", "description": "Product weight in grams" },
+      "dimensions": {
+        "type": "S",
+        "description": "Product dimensions (LxWxH)"
+      },
+      "isActive": {
+        "type": "BOOL",
+        "description": "Whether product is active"
+      },
+      "isFeatured": {
+        "type": "BOOL",
+        "description": "Whether product is featured"
+      },
+      "rating": { "type": "N", "description": "Average product rating" },
+      "reviewCount": { "type": "N", "description": "Number of reviews" },
+      "createdAt": { "type": "N", "description": "Product creation timestamp" },
+      "updatedAt": { "type": "N", "description": "Last update timestamp" },
+      "metadata": { "type": "S", "description": "Additional JSON metadata" }
+    }
+  },
+  "bookings": {
+    "PK": "userId",
+    "SK": "bookingId",
+    "columns": {
+      "userId": { "type": "S", "description": "User or creator ID" },
+      "bookingId": { "type": "S", "description": "Booking ID or type" },
+      "creatorId": { "type": "S", "description": "Creator ID" },
+      "startTime": { "type": "S", "description": "Booking start time" },
+      "endTime": { "type": "S", "description": "Booking end time" },
+      "status": { "type": "S", "description": "Booking status" }
+    }
+  }
+}

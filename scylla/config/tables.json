@@ -1,0 +1,76 @@
+{
+  "pupils": {
+    "PK": "id",
+    "TableName": "pupils",
+    "KeySchema": [
+      { "AttributeName": "id", "KeyType": "HASH" },
+      { "AttributeName": "name", "KeyType": "RANGE" }
+    ],
+    "AttributeDefinitions": [
+      { "AttributeName": "id", "AttributeType": "S" },
+      { "AttributeName": "name", "AttributeType": "S" }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    }
+  },
+
+  "fs_bookings": {
+    "PK": "booking_ID",
+    "TableName": "fs_bookings",
+    "KeySchema": [{ "AttributeName": "booking_ID", "KeyType": "HASH" }],
+    "AttributeDefinitions": [
+      { "AttributeName": "booking_ID", "AttributeType": "S" },
+      { "AttributeName": "creatorId", "AttributeType": "S" },
+      { "AttributeName": "startTime", "AttributeType": "S" },
+      { "AttributeName": "user_ID", "AttributeType": "S" }
+    ],
+    "GlobalSecondaryIndexes": [
+      {
+        "IndexName": "GSI1",
+        "KeySchema": [
+          { "AttributeName": "creatorId", "KeyType": "HASH" },
+          { "AttributeName": "startTime", "KeyType": "RANGE" }
+        ],
+        "Projection": { "ProjectionType": "ALL" },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      },
+      {
+        "IndexName": "GSI2",
+        "KeySchema": [
+          { "AttributeName": "user_ID", "KeyType": "HASH" },
+          { "AttributeName": "startTime", "KeyType": "RANGE" }
+        ],
+        "Projection": { "ProjectionType": "ALL" },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    }
+  },
+
+  "fs_booking_settings": {
+    "PK": "id",
+    "TableName": "fs_booking_settings",
+    "KeySchema": [
+      { "AttributeName": "id", "KeyType": "HASH" }
+    ],
+    "AttributeDefinitions": [
+      { "AttributeName": "id", "AttributeType": "S" }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    }
+  }
+  
+}
