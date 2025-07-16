@@ -1,15 +1,18 @@
 {
   "type": "module",
-"scripts": {
-  "test": "node --experimental-vm-modules node_modules/.bin/jest --watchAll"
-},
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --watchAll"
+  },
   "dependencies": {
+    "express": "^5.1.0",
     "luxon": "^3.6.1",
     "rrule": "^2.8.1",
     "ts-node": "^10.9.2",
     "tsc": "^2.0.4"
   },
   "devDependencies": {
+    "@types/express": "^5.0.3",
     "@types/luxon": "^3.6.2",
     "i": "^0.3.7",
     "jest": "^30.0.4",
