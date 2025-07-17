@@ -20,14 +20,19 @@ async function init() {
     );
     console.log("✅ Table configurations loaded:", Object.keys(tableConfigs));
 
-    ScyllaDb.configure({
-      endpoint: process.env.SCYLLA_ENDPOINT || "http://localhost:8000/",
-      port: process.env.SCYLLA_PORT || 8000,
-      region: process.env.SCYLLA_REGION || "us-east-1",
-      key: process.env.SCYLLA_KEY || "test",
-      secret: process.env.SCYLLA_SECRET || "test",
-      enableCache: true, // Enable cache
-    });
+
+
+  ScyllaDb.configure({
+    endpoint:
+      "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws/scylla",
+    region: "ap-northeast-1",
+    port: 443,
+    key: "test",
+    secret: "test",
+    enableCache: false,
+  });
+    ScyllaDb.beginSession();
+
 
     console.log("✅ ScyllaDB client configured with cache enabled");
 

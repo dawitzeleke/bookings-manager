@@ -16,6 +16,16 @@
     }
   },
 
+  "users": {
+    "PK": "id",
+    "KeySchema": [{ "AttributeName": "id", "KeyType": "HASH" }],
+    "AttributeDefinitions": [{ "AttributeName": "id", "AttributeType": "S" }],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    }
+  },
+
   "fs_bookings": {
     "PK": "booking_ID",
     "TableName": "fs_bookings",
@@ -61,16 +71,11 @@
   "fs_booking_settings": {
     "PK": "id",
     "TableName": "fs_booking_settings",
-    "KeySchema": [
-      { "AttributeName": "id", "KeyType": "HASH" }
-    ],
-    "AttributeDefinitions": [
-      { "AttributeName": "id", "AttributeType": "S" }
-    ],
+    "KeySchema": [{ "AttributeName": "id", "KeyType": "HASH" }],
+    "AttributeDefinitions": [{ "AttributeName": "id", "AttributeType": "S" }],
     "ProvisionedThroughput": {
       "ReadCapacityUnits": 5,
       "WriteCapacityUnits": 5
     }
   }
-  
 }
