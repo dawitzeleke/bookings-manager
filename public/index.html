@@ -94,12 +94,16 @@
       },
       body: JSON.stringify({ creatorId, requestedStart, requestedEnd })
     });
-
+    document.getElementById("result").innerText = "loading...";
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
     const result = await response.json();
     document.getElementById("result").innerText =
-      "Is Time Available? " + (result.isAvailable ? "✅ Yes" : "❌ No");
+      "Is Time Available? " + (result.isAvailable ? "✅ Yes" : "❌ No" + JSON.stringify(result)
+      );
   });
 </script>
 
 </body>
+</html>
+
 </html>
