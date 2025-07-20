@@ -1,10 +1,12 @@
 {
   "type": "module",
   "scripts": {
-    "start": "ts-node src/app.ts",
+    "start": "nodemon --loader ts-node/esm src/app.js",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --watchAll"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "luxon": "^3.6.1",
     "rrule": "^2.8.1",

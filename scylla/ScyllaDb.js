@@ -11,7 +11,7 @@ import { pathToFileURL } from "url";
 export default class ScyllaDb {
   /* ---------- configurable defaults ---------- */
   static DEFAULT_RETRIES = 3;
-  static INITIAL_BACKOFF_MS = 100;
+  static INITIAL_BACKOFF_MS = 100;;
   static DEFAULT_PORT = 8000;
   static CONTENT_TYPE = "application/x-amz-json-1.0";
 
@@ -25,11 +25,11 @@ export default class ScyllaDb {
   /* ---------- runtime config ---------- */
   static #config = {
     endpoint:
-      process.env.SCYLLA_ALTERNATOR_ENDPOINT ?? "http://localhost:8000/",
+      process.env.SCYLLA_ALTERNATOR_ENDPOINT ?? "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws",
     port: ScyllaDb.DEFAULT_PORT,
     retries: ScyllaDb.DEFAULT_RETRIES,
     backoff: ScyllaDb.INITIAL_BACKOFF_MS,
-    region: process.env.SCYLLA_ACCESS_REGION ?? "us-east-1",
+    region: process.env.SCYLLA_ACCESS_REGION ?? "ap-northeast",
     key: process.env.SCYLLA_ACCESS_KEY ?? "",
     secret: process.env.SCYLLA_ACCESS_PASSWORD ?? "",
     enableCache: process.env.ENABLE_CACHE === "true",
