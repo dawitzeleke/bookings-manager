@@ -3,6 +3,7 @@ import BookingsManager, { Users } from "./BookingsManager.js";
 import ScyllaDb from "./scylla/ScyllaDb.js";
 
 
+
 // Instance of BookingsManager
 const manager = new BookingsManager();
 

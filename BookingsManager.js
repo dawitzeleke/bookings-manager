@@ -242,7 +242,6 @@ export default class BookingsManager {
     if (!creatorId) {
       return false;
     }
-
     // Convert creator ID to integer (if applicable)
     creatorId = parseInt(creatorId, 10);
 
@@ -421,7 +420,8 @@ export default class BookingsManager {
     return offlineHours;
   }
 
-  static async isBookingWithinOfflineHours(
+ 
+    static async isBookingWithinOfflineHours(
     creatorId,
     bookingStartTime,
     bookingEndTime,
@@ -486,6 +486,11 @@ export default class BookingsManager {
     return true;
   }
 
+   // its  201 but it says like this
+  // {
+  //     "error": "missing_required_fields",
+  //     "message": "One or more required fields are missing."
+  // }
   static async createBooking(
     fanId,
     creatorId,
@@ -977,6 +982,7 @@ export default class BookingsManager {
     };
   }
 
+  // not sure if it is working
   static async isRequestedTimeAvailable(
     creatorId,
     requestedStart,
@@ -1251,6 +1257,7 @@ export default class BookingsManager {
     }
   }
 
+  // confused on how to handle the input through the end point 
   static validateAndSanitizeBookingSettings(settingsObj) {
     const validatedSettings = {};
 
@@ -1614,6 +1621,7 @@ export default class BookingsManager {
 
     return filtered;
   }
+  
   static async getBookingDetails(bookingId) {
     if (!bookingId) return false;
 
