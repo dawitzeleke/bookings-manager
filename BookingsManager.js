@@ -7,6 +7,20 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ScyllaDb from "./scylla/ScyllaDb.js";
 
+const shouldReset = false;
+async function resetDB() {
+  const tables = await ScyllaDb.listTables();
+
+  for (const table of tables) {
+    console.log(`Deleting table: ${table}`);
+    try {
+      await ScyllaDb.deleteTable(table);
+    } catch (err) {
+      console.error(`Failed to delete table ${table}:`, err.message);
+    }
+  }
+}
+
 async function init() {
   try {
     const tableConfigsPath = path.join(
@@ -36,6 +50,10 @@ async function init() {
 
     console.log("list of tables:", await ScyllaDb.listTables());
 
+    //TODO: remove when not needed
+    if (shouldReset) {
+      await resetDB();
+    }
     const schemaTablesNames = await ScyllaDb.listTables();
     for (const tableName of Object.keys(tableConfigs)) {
       console.log(`Table: ${tableName}`);
@@ -1065,15 +1083,18 @@ export default class BookingsManager {
 
       const userBookings = await this.getUserBookingJson(
         creatorId,
-        bookingSettings
+        bookingSettings,
+        true
       );
       const bufferTime = 10 * 60 * 1000;
 
       for (const day of userBookings.days || []) {
-        if (
-          day.date === new Date(requestedStartTs).toISOString().slice(0, 10) &&
-          !day.closed
-        ) {
+        const bookingDate = DateTime.generateRelativeTimestamp(
+          "yyyy-MM-dd",
+          requestedStartTs
+        );
+        if (day.date === bookingDate && !day.closed) {
+          console.log("----", day.date, bookingDate);
           for (const booking of day.booked || []) {
             const existingStartTs = DateTime.parseDateToTimestamp(
               `${day.date} ${booking.start}`
@@ -1107,7 +1128,7 @@ export default class BookingsManager {
     }
   }
 
-  static async getUserBookingJson(creatorId, bookingSettings) {
+  static async getUserBookingJson(creatorId, bookingSettings, allTime = false) {
     if (
       !bookingSettings.booking_window_in_minutes ||
       !bookingSettings.timezone
@@ -1135,19 +1156,36 @@ export default class BookingsManager {
 
     let bookings;
     try {
-      bookings = await ScyllaDb.query(
-        "fs_bookings",
-        "creatorId = :creatorId AND startTime BETWEEN :start AND :end",
-        {
-          ":creatorId": `creator#${creatorId}`,
-          ":start": startIso,
-          ":end": endIso,
-        },
-        {
-          IndexName: "GSI1",
-        }
-      );
+      if (allTime) {
+        bookings = await ScyllaDb.query(
+          "fs_bookings",
+          "creatorId = :creatorId",
+          {
+            ":creatorId": `${creatorId}`,
+          },
+
+          {
+            IndexName: "GSI1",
+          }
+        );
+      } else {
+        bookings = await ScyllaDb.query(
+          "fs_bookings",
+          "creatorId = :creatorId" + allTime
+            ? ""
+            : " AND startTime BETWEEN :start AND :end",
+          {
+            ":creatorId": `${creatorId}`,
+            ":start": startIso,
+            ":end": endIso,
+          },
+          {
+            IndexName: "GSI1",
+          }
+        );
+      }
     } catch (err) {
+      console.error(err);
       return {
         error: "query_failed",
         message: err.message || "Failed to retrieve bookings",

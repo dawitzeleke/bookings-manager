@@ -31,6 +31,10 @@ async function createCreatorUser(id) {
       start: "22:00:00",
       end: "06:00:00",
     },
+    default_working_hours: {
+      start: "09:00:00",
+      end: "17:00:00",
+    },
     suspensions: [
       {
         start_date: "2025-07-10",
@@ -51,10 +55,6 @@ async function createCreatorUser(id) {
     min_booking_time: 15,
     negotiation_phase: false,
     after_hour_surcharge: false,
-    default_working_hours: {
-      start: "09:00:00",
-      end: "17:00:00",
-    },
     booking_window_in_minutes: 1440,
     after_hour_token_price_per_minute: 2,
     default_working_hour_token_price_per_minute: 1,
@@ -260,6 +260,16 @@ async function runTests() {
         "FREQ=YEARLY;COUNT=2"
       )
     );
+
+    console.log(
+      " should not be available",
+      await BookingsManager.isRequestedTimeAvailable(
+        creatorId,
+        "2025-07-05 10:20:00",
+        "2025-07-05 10:40:00"
+      )
+    );
+    return;
 
     console.log(
       "update settings should be 61:",
