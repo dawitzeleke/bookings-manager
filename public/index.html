@@ -98,7 +98,7 @@
     await new Promise(resolve => setTimeout(resolve, 1000)); 
     const result = await response.json();
     document.getElementById("result").innerText =
-      "Is Time Available? " + (result.isAvailable ? "✅ Yes" : "❌ No" + JSON.stringify(result)
+      "Is Time Available? " + (result.isAvailable === true ? "✅ Yes" : "❌ No" + JSON.stringify(result)
       );
   });
 </script>

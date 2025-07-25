@@ -7,16 +7,39 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ScyllaDb from "./scylla/ScyllaDb.js";
 
-const shouldReset = false;
+const shouldReset = true;
 async function resetDB() {
   const tables = await ScyllaDb.listTables();
 
   for (const table of tables) {
-    console.log(`Deleting table: ${table}`);
-    try {
-      await ScyllaDb.deleteTable(table);
-    } catch (err) {
-      console.error(`Failed to delete table ${table}:`, err.message);
+    if (
+      table === "fs_bookings" ||
+      table === "fs_booking_settings" ||
+      table === "pupils"
+    ) {
+      console.log(`Deleting table: ${table}`);
+      try {
+        await ScyllaDb.deleteTable(table);
+      } catch (err) {
+        console.error(`Failed to delete table ${table}:`, err.message);
+      }
+    }
+  }
+}
+
+function validateUtf8Strings(obj, path = "") {
+  for (const key in obj) {
+    const value = obj[key];
+    const currentPath = `${path}.${key}`;
+
+    if (typeof value === "string") {
+      const buffer = Buffer.from(value, "utf8");
+      const reencoded = buffer.toString("utf8");
+      if (value !== reencoded) {
+        console.warn(`⚠️ Non-UTF8 or invalid string at ${currentPath}:`, value);
+      }
+    } else if (typeof value === "object" && value !== null) {
+      validateUtf8Strings(value, currentPath);
     }
   }
 }
@@ -34,19 +57,16 @@ async function init() {
     );
     console.log("✅ Table configurations loaded:", Object.keys(tableConfigs));
 
-
-
-  ScyllaDb.configure({
-    endpoint:
-      "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws/scylla",
-    region: "ap-northeast-1",
-    port: 443,
-    key: "test",
-    secret: "test",
-    enableCache: false,
-  });
+    ScyllaDb.configure({
+      endpoint:
+        "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws/scylla",
+      region: "ap-northeast-1",
+      port: 443,
+      key: "test",
+      secret: "test",
+      enableCache: false,
+    });
     ScyllaDb.beginSession();
-
 
     console.log("✅ ScyllaDB client configured with cache enabled");
 
@@ -68,7 +88,8 @@ async function init() {
         );
         const schema = ScyllaDb.getSchemaFromConfig(tableName);
         schema.TableName = tableName;
-
+        console.log("validating schema....");
+        validateUtf8Strings(schema); // will log bad values
         await ScyllaDb.createTable(schema);
       } else {
         console.log(
@@ -80,6 +101,7 @@ async function init() {
   } catch (e) {
     console.error("Error during initialization:", e);
   }
+  console.log("now has tables:", await ScyllaDb.listTables());
 }
 await init();
 
@@ -438,8 +460,7 @@ export default class BookingsManager {
     return offlineHours;
   }
 
- 
-    static async isBookingWithinOfflineHours(
+  static async isBookingWithinOfflineHours(
     creatorId,
     bookingStartTime,
     bookingEndTime,
@@ -504,7 +525,7 @@ export default class BookingsManager {
     return true;
   }
 
-   // its  201 but it says like this
+  // its  201 but it says like this
   // {
   //     "error": "missing_required_fields",
   //     "message": "One or more required fields are missing."
@@ -1295,7 +1316,7 @@ export default class BookingsManager {
     }
   }
 
-  // confused on how to handle the input through the end point 
+  // confused on how to handle the input through the end point
   static validateAndSanitizeBookingSettings(settingsObj) {
     const validatedSettings = {};
 
@@ -1659,7 +1680,7 @@ export default class BookingsManager {
 
     return filtered;
   }
-  
+
   static async getBookingDetails(bookingId) {
     if (!bookingId) return false;
 
