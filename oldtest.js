@@ -2,14 +2,7 @@
 import BookingsManager, { Users } from "./BookingsManager.js";
 import ScyllaDb from "./scylla/ScyllaDb.js";
 
-// Configure ScyllaDB
-ScyllaDb.configure({
-  endpoint: "http://localhost:8000/",
-  region: "us-east-1",
-  key: "test",
-  secret: "test",
-  enableCache: false,
-});
+
 
 // Instance of BookingsManager
 const manager = new BookingsManager();

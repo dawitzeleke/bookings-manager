@@ -11,9 +11,9 @@ import { pathToFileURL } from "url";
 export default class ScyllaDb {
   /* ---------- configurable defaults ---------- */
   static DEFAULT_RETRIES = 3;
-  static INITIAL_BACKOFF_MS = 100;
+  static INITIAL_BACKOFF_MS = 100;;
   static DEFAULT_PORT = 8000;
-  static CONTENT_TYPE = "application/x-amz-json-1.0";
+  static CONTENT_TYPE = "application/json";
 
   /* ---------- private in-memory state ---------- */
   static #errors = [];
@@ -25,11 +25,11 @@ export default class ScyllaDb {
   /* ---------- runtime config ---------- */
   static #config = {
     endpoint:
-      process.env.SCYLLA_ALTERNATOR_ENDPOINT ?? "http://localhost:8000/",
+      process.env.SCYLLA_ALTERNATOR_ENDPOINT ?? "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws",
     port: ScyllaDb.DEFAULT_PORT,
     retries: ScyllaDb.DEFAULT_RETRIES,
     backoff: ScyllaDb.INITIAL_BACKOFF_MS,
-    region: process.env.SCYLLA_ACCESS_REGION ?? "us-east-1",
+    region: process.env.SCYLLA_ACCESS_REGION ?? "ap-northeast",
     key: process.env.SCYLLA_ACCESS_KEY ?? "",
     secret: process.env.SCYLLA_ACCESS_PASSWORD ?? "",
     enableCache: process.env.ENABLE_CACHE === "true",
@@ -138,6 +138,7 @@ export default class ScyllaDb {
       ? JSON.stringify(payload)
       : "{}";
 
+    // console.log("🚀 ~ ScyllaDb ~ payloadJson:", payloadJson);
     const baseUrl = new URL(ScyllaDb.#config.endpoint);
     if (port) baseUrl.port = String(port);
 
@@ -168,6 +169,7 @@ export default class ScyllaDb {
 
       const headers = {
         ...signedHdrs,
+        "Content-Type": ScyllaDb.CONTENT_TYPE,
         "Content-Length": Buffer.byteLength(payloadJson),
         ...ScyllaDb.#customRequestOptions.headers,
       };
@@ -176,7 +178,7 @@ export default class ScyllaDb {
         method: "POST",
         hostname: baseUrl.hostname,
         port: baseUrl.port || defaultPort,
-        path: baseUrl.pathname || "/",
+        path: `${baseUrl.pathname.replace(/\/$/, "")}/${target}`,
         headers,
         agent: useAgent,
         timeout: 1000,
@@ -197,14 +199,16 @@ export default class ScyllaDb {
           });
 
           req.on("error", reject);
-          req.write(payloadJson);
-          // console.log("request bodyl...", payloadJson)
+          const json = payloadJson;
+          req.write(json);
+          // console.log("🚀 ~ ScyllaDb ~ body ~ payloadJson:", json);
           req.end();
         });
 
         const { status, body: raw } = body;
         const parsed = raw ? JSON.parse(raw) : {};
 
+        // console.log("🚀 ~ ScyllaDb ~ parsed:", parsed);
         if (status === 200) {
           return parsed;
         }
@@ -976,7 +980,10 @@ export default class ScyllaDb {
   static beginSession() {
     const baseUrl = new URL(ScyllaDb.#config.endpoint);
     if (baseUrl.protocol === "https:" && !ScyllaDb.#persistentAgent) {
-      ScyllaDb.#persistentAgent = new https.Agent({ keepAlive: true });
+      ScyllaDb.#persistentAgent = new https.Agent({
+        keepAlive: true,
+        family: 4,
+      });
       console.log("Persistent HTTPS session started");
     } else if (baseUrl.protocol === "http:") {
       console.log("HTTP session - no persistent agent needed");

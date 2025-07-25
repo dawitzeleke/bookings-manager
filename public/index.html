@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Time Availability</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Check Time Availability</h2>
+  <form id="availabilityForm">
+    <label for="creatorId">Creator ID:</label>
+    <input type="text" id="creatorId" name="creatorId" value="123" required>
+
+    <label for="requestedStart">Start Time (YYYY-MM-DD HH:MM:SS):</label>
+    <input type="text" id="requestedStart" name="requestedStart" value="2025-07-01 08:00:00" required>
+
+    <label for="requestedEnd">End Time (YYYY-MM-DD HH:MM:SS):</label>
+    <input type="text" id="requestedEnd" name="requestedEnd" value="2025-07-01 09:00:00" required>
+
+    <button type="submit">Check Availability</button>
+  </form>
+
+  <div id="result"></div>
+</div>
+
+<script>
+  document.getElementById("availabilityForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const creatorId = document.getElementById("creatorId").value;
+    const requestedStart = document.getElementById("requestedStart").value;
+    const requestedEnd = document.getElementById("requestedEnd").value;
+
+    const response = await fetch("https://bookings-manager.onrender.com/api/isRequestedTimeAvailable", { // Update with your endpoint
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ creatorId, requestedStart, requestedEnd })
+    });
+    document.getElementById("result").innerText = "loading...";
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    const result = await response.json();
+    document.getElementById("result").innerText =
+      "Is Time Available? " + (result.isAvailable ? "✅ Yes" : "❌ No" + JSON.stringify(result)
+      );
+  });
+</script>
+
+</body>
+</html>
+
+</html>

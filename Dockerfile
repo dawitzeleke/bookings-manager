@@ -1,5 +1,6 @@
 # Use Node.js base image
-FROM node:18
+
+FROM node:24-slim
 
 # Set working directory
 WORKDIR /app
@@ -15,4 +16,4 @@ COPY . .
 EXPOSE 3000
 
 # Start the server
-CMD ["npx", "ts-node", "src/app.ts"]
+CMD ["npx", "ts-node-esm", "src/app.ts"]

@@ -34,14 +34,19 @@ async function init() {
     );
     console.log("✅ Table configurations loaded:", Object.keys(tableConfigs));
 
-    ScyllaDb.configure({
-      endpoint: process.env.SCYLLA_ENDPOINT || "http://localhost:8000/",
-      port: process.env.SCYLLA_PORT || 8000,
-      region: process.env.SCYLLA_REGION || "us-east-1",
-      key: process.env.SCYLLA_KEY || "test",
-      secret: process.env.SCYLLA_SECRET || "test",
-      enableCache: true, // Enable cache
-    });
+
+
+  ScyllaDb.configure({
+    endpoint:
+      "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws/scylla",
+    region: "ap-northeast-1",
+    port: 443,
+    key: "test",
+    secret: "test",
+    enableCache: false,
+  });
+    ScyllaDb.beginSession();
+
 
     console.log("✅ ScyllaDB client configured with cache enabled");
 
@@ -255,7 +260,6 @@ export default class BookingsManager {
     if (!creatorId) {
       return false;
     }
-
     // Convert creator ID to integer (if applicable)
     creatorId = parseInt(creatorId, 10);
 
@@ -434,7 +438,8 @@ export default class BookingsManager {
     return offlineHours;
   }
 
-  static async isBookingWithinOfflineHours(
+ 
+    static async isBookingWithinOfflineHours(
     creatorId,
     bookingStartTime,
     bookingEndTime,
@@ -499,6 +504,11 @@ export default class BookingsManager {
     return true;
   }
 
+   // its  201 but it says like this
+  // {
+  //     "error": "missing_required_fields",
+  //     "message": "One or more required fields are missing."
+  // }
   static async createBooking(
     fanId,
     creatorId,
@@ -990,6 +1000,7 @@ export default class BookingsManager {
     };
   }
 
+  // not sure if it is working
   static async isRequestedTimeAvailable(
     creatorId,
     requestedStart,
@@ -1284,6 +1295,7 @@ export default class BookingsManager {
     }
   }
 
+  // confused on how to handle the input through the end point 
   static validateAndSanitizeBookingSettings(settingsObj) {
     const validatedSettings = {};
 
@@ -1647,6 +1659,7 @@ export default class BookingsManager {
 
     return filtered;
   }
+  
   static async getBookingDetails(bookingId) {
     if (!bookingId) return false;
 
