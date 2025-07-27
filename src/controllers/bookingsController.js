@@ -1,6 +1,7 @@
 import { getRollingWorkWindows, 
     resolveEffectiveHours, 
     isUserExistsAndValid, 
+  getCreatorBookings,
     getCreatorBookingSettings, isCreatorBookingSuspended, validateBookingDuration, getOfflineHours, isBookingWithinOfflineHours, createBooking, calculatePrice, doesAppointmentCrossOver, isRequestedTimeAvailable, getUserBookingJson, updateBookingSettings, getUserIdFromBooking, getBookingStatus, updateBookingStatus, bookingExists, setBookingStatus, getUpcomingBookings, getBookingDetails, getUpcomingBookingSessions, registerReadyState} from '../services/bookingsService.js';
 
 export async function handleGetRollingWorkWindows(req, res) {
@@ -38,6 +39,18 @@ export async function handleGetgetCreatorBookingSettings(req, res) {
   try {
     const creatorId = req.query.creatorId; // Assuming creatorId is passed as a query parameter
     const bookingSettings = await getCreatorBookingSettings(creatorId);
+    res.json(bookingSettings);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function handleGetCreatorBookings(req, res) {
+  try {
+    const creatorId = req.query.creatorId; // Assuming creatorId is passed as a query parameter
+    console.log("🚀 ~ handleGetCreatorBookings ~ creatorId:", creatorId)
+    const bookingSettings = await getCreatorBookings(creatorId);
     res.json(bookingSettings);
   } catch (error) {
     console.error("Error:", error);
@@ -243,7 +256,7 @@ export async function handleGetBookingStatus(req, res) {
 export async function handleUpdateBookingStatus(req, res) {
     const { bookingId, status } = req.body; // Assuming bookingId and status are passed in the request body
     try {
-        const updatedStatus = await updateBookingStatus(bookingId, { status });
+        const updatedStatus = await updateBookingStatus(bookingId,  status );
         res.json(updatedStatus);
     } catch (error) {
         console.error("Error:", error);

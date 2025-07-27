@@ -57,14 +57,24 @@ async function init() {
     );
     console.log("✅ Table configurations loaded:", Object.keys(tableConfigs));
 
+    // ScyllaDb.configure({
+    //   endpoint:
+    //     "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws/scylla",
+    //   region: "ap-northeast-1",
+    //   port: 443,
+    //   key: "test",
+    //   secret: "test",
+    //   enableCache: false,
+    // });
+    //
+
     ScyllaDb.configure({
-      endpoint:
-        "https://i7wrvsvkgmteuu4co2sd3r5tle0cxpwf.lambda-url.ap-northeast-1.on.aws/scylla",
-      region: "ap-northeast-1",
-      port: 443,
-      key: "test",
-      secret: "test",
-      enableCache: false,
+      endpoint: process.env.SCYLLA_ENDPOINT || "http://localhost:8000/",
+      port: process.env.SCYLLA_PORT || 8000,
+      region: process.env.SCYLLA_REGION || "us-east-1",
+      key: process.env.SCYLLA_KEY || "test",
+      secret: process.env.SCYLLA_SECRET || "test",
+      enableCache: true, // Enable cache
     });
     ScyllaDb.beginSession();
 
@@ -1421,6 +1431,7 @@ export default class BookingsManager {
   }
 
   static async updateBookingStatus(bookingId, newStatus) {
+    console.log(bookingId, newStatus, "---------------");
     // Return false if bookingId or newStatus is invalid
     if (
       !bookingId ||
@@ -3185,9 +3196,11 @@ class Tokens {
 export class Users {
   static users = {};
   static async createUser(user) {
+    console.log("------creating user", user);
     this.users[user.user_ID] = user;
   }
   static async getUserById(userId) {
+    console.log("users are:", this.users);
     return this.users[userId] || false;
   }
 

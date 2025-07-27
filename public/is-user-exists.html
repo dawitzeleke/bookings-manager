@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Check User Validity</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+      }
+      h2 {
+        margin: 0 0 20px;
+        font-size: 1.5em;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0069d9;
+      }
+      #result {
+        margin-top: 20px;
+        font-size: 0.95em;
+        white-space: pre-wrap;
+      }
+      .loading {
+        color: #888;
+        font-style: italic;
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Is user exists and is valid</h2>
+      <form id="checkUserForm">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" value="123" required />
+        <button type="submit">Check</button>
+      </form>
+      <div id="loading" class="loading">Loading...</div>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("checkUserForm");
+      const loading = document.getElementById("loading");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        result.innerText = "";
+        loading.style.display = "block";
+
+        const userId = document.getElementById("userId").value;
+
+        try {
+          const res = await fetch(
+            `/api/isUserExistsAndValid?userId=${encodeURIComponent(userId)}`
+          );
+          const data = await res.json();
+          result.innerText = JSON.stringify(data, null, 2);
+        } catch (error) {
+          result.innerText = "Error: " + error;
+        } finally {
+          loading.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

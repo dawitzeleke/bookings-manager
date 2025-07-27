@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Check Booking Within Offline Hours</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 500px;
+      }
+      h2 {
+        margin: 0 0 20px;
+        font-size: 1.5em;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0069d9;
+      }
+      #result {
+        margin-top: 20px;
+        font-size: 0.95em;
+        white-space: pre-wrap;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .loading {
+        color: #888;
+        font-style: italic;
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Check Booking Within Offline Hours</h2>
+      <form id="checkForm">
+        <label for="creatorId">Creator Id</label>
+        <input
+          type="text"
+          id="creatorId"
+          value="123"
+          placeholder="Creator ID"
+          required
+        />
+        <br />
+
+        <label for="creatorId">Date</label>
+        <input
+          type="data"
+          id="date"
+          value="2025-01-01"
+          placeholder="Date"
+          required
+        />
+        <br />
+        <label for="startTime">Booking Start Time (24h):</label>
+        <input type="time" id="startTime" required value="20:00" step="1" />
+
+        <label for="endTime">Booking End Time (24h):</label>
+        <input type="time" id="endTime" required value="21:00" step="1" />
+
+        <!-- Working Hours -->
+        <fieldset
+          style="
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+          "
+        >
+          <legend><strong>Working Hours</strong></legend>
+          <label for="workingStart">Working Start Time (24h):</label>
+          <input
+            type="time"
+            id="workingStart"
+            value="08:00"
+            required
+            step="1"
+          />
+
+          <label for="workingEnd">Working End Time (24h):</label>
+          <input type="time" id="workingEnd" value="10:00" required step="1" />
+        </fieldset>
+
+        <!-- After Hours -->
+        <fieldset
+          style="
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+          "
+        >
+          <legend><strong>After Hours</strong></legend>
+          <label for="offlineStart">After Hours Start Time (24h):</label>
+          <input
+            type="time"
+            id="offlineStart"
+            value="20:00"
+            required
+            step="1"
+          />
+
+          <label for="offlineEnd">After Hours End Time (24h):</label>
+          <input type="time" id="offlineEnd" value="21:00" required step="1" />
+        </fieldset>
+        <button type="submit">Run</button>
+      </form>
+      <div id="loading" class="loading">Checking...</div>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("checkForm");
+      const loading = document.getElementById("loading");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        result.innerText = "";
+        loading.style.display = "block";
+
+        const creatorId = document.getElementById("creatorId").value;
+        const bookingStartTime = document.getElementById("startTime").value;
+        const bookingEndTime = document.getElementById("endTime").value;
+        const date = document.getElementById("date").value;
+        const offlineStart = document.getElementById("offlineStart").value;
+        const offlineEnd = document.getElementById("offlineEnd").value;
+
+        const workingStart = document.getElementById("workingStart").value;
+        const workingEnd = document.getElementById("workingEnd").value;
+
+        function toFullTime(t) {
+          return t.split(":").length === 2 ? t + ":00" : t.slice(0, 8);
+        }
+
+        const payload = {
+          bookingStartTime: toFullTime(bookingStartTime),
+          bookingEndTime: toFullTime(bookingEndTime),
+          date,
+          bookingSettings: {
+            default_working_hours: {
+              start: toFullTime(workingStart),
+              end: toFullTime(workingEnd),
+            },
+            after_hours: {
+              start: toFullTime(offlineStart),
+              end: toFullTime(offlineEnd),
+            },
+          },
+        };
+
+        try {
+          const res = await fetch(
+            `/api/isBookingWithinOfflineHours?creatorId=${encodeURIComponent(
+              creatorId
+            )}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
+          const data = await res.json();
+          console.log("🚀 ~ data:", data);
+          result.innerText = JSON.stringify(data, null, 2);
+        } catch (error) {
+          result.innerText = "Error: " + error;
+        } finally {
+          loading.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

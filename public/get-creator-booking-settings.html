@@ -1,0 +1,93 @@
+<!-- Filename: getCreatorBookingSettings.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>getCreatorBookingSettings Tester</title>
+    <style>
+      /* reuse container style */
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 360px;
+      }
+      h2 {
+        margin: 0 0 20px;
+        font-size: 1.5em;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #4caf50;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      #result3 {
+        margin-top: 20px;
+        font-size: 0.95em;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>getCreatorBookingSettings</h2>
+      <form id="form3">
+        <label for="creatorId">Creator ID:</label>
+        <input type="text" id="creatorId" value="123" required />
+        <button type="submit">Run</button>
+      </form>
+      <pre>
+        <code>
+
+      <div id="result3"></div>
+        </code>
+      </pre>
+    </div>
+    <script>
+      document.getElementById("form3").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const cid = document.getElementById("creatorId").value;
+        const res = await fetch(
+          //   `https://bookings-manager.onrender.com/api/getCreatorBookingSettings?creatorId=${cid}`
+          `api/getCreatorBookingSettings?creatorId=${cid}`
+        );
+        document.getElementById("result3").innerText = JSON.stringify(
+          JSON.parse(await res.text()),
+          null,
+          2
+        );
+      });
+    </script>
+  </body>
+</html>

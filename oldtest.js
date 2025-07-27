@@ -2,8 +2,6 @@
 import BookingsManager, { Users } from "./BookingsManager.js";
 import ScyllaDb from "./scylla/ScyllaDb.js";
 
-
-
 // Instance of BookingsManager
 const manager = new BookingsManager();
 
@@ -57,7 +55,7 @@ async function createCreatorUser(id) {
 // Run tests
 
 // Run tests
-async function runTests() {
+export async function runTests() {
   // Load table config (adjust path if needed)
   await ScyllaDb.loadTableConfigs("./scylla/config/tables.json");
 
@@ -180,6 +178,7 @@ async function runTests() {
         }
       )
     );
+    return;
 
     console.log(
       "should not be available",
@@ -262,7 +261,6 @@ async function runTests() {
         "2025-07-05 10:40:00"
       )
     );
-    return;
 
     console.log(
       "update settings should be 61:",

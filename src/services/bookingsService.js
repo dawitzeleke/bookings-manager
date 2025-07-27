@@ -40,6 +40,18 @@ export async function getCreatorBookingSettings(creatorId) {
     }
 }
 
+
+export async function getCreatorBookings(creatorId) {
+    try {
+        console.log('-----------------------', creatorId);
+        const bookingSettings = await BookingsManager.getCreatorsBookings(creatorId);
+        return bookingSettings;
+    } catch (error) {
+        console.error("Error fetching creator bookings:", error);
+        throw new Error("Internal Server Error");
+    }
+}
+
 export async function isCreatorBookingSuspended(creatorId, date, bookingSettings) {
     try {
         const isSuspended = await BookingsManager.isCreatorBookingSuspended(creatorId, date, bookingSettings);
