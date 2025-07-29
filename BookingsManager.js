@@ -551,10 +551,6 @@ export default class BookingsManager {
     initialTokenCharge = [],
     recurrenceRule = null
   ) {
-    console.log(
-      "🚀 ~ BookingsManager ~ createBooking ~ initialTokenCharge:",
-      initialTokenCharge
-    );
     // Basic validation
     if (!fanId || !creatorId || !bookingDate || !bookingStart || !bookingEnd) {
       return {
@@ -885,8 +881,9 @@ export default class BookingsManager {
     date,
     bookingSettings
   ) {
+    let setCreatorTimeZone;
     try {
-      const setCreatorTimeZone = await Utilities.setCreatorTimeZone(creatorId);
+      setCreatorTimeZone = await Utilities.setCreatorTimeZone(creatorId);
       if (!setCreatorTimeZone) return false;
     } catch (e) {
       console.error("Error setting creator timezone:", e);
@@ -994,14 +991,19 @@ export default class BookingsManager {
           appointmentStartTimeOnly < workingHours.start &&
           appointmentStartTimeOnly < workingHours.end
         ) {
-          nextAppointmentDate = Utilities.get_formatted_current_time(
+          // nextAppointmentDate = Utilities.get_formatted_current_time(
+          //   "yyyy-MM-dd",
+          //   DateTime.fromISO(
+          //     date
+          //     // { zone: setCreatorTimeZone }
+          //   ).plus({
+          //     days: 1,
+          //   }),
+          //   setCreatorTimeZone
+          // );
+          nextAppointmentDate = DateTime.generateRelativeTimestamp(
             "yyyy-MM-dd",
-            DateTime.fromISO(
-              date
-              // { zone: setCreatorTimeZone }
-            ).plus({
-              days: 1,
-            }),
+            "+1 day",
             setCreatorTimeZone
           );
         } else {
@@ -1140,7 +1142,6 @@ export default class BookingsManager {
           requestedStartTs
         );
         if (day.date === bookingDate && !day.closed) {
-          console.log("----", day.date, bookingDate);
           for (const booking of day.booked || []) {
             const existingStartTs = DateTime.parseDateToTimestamp(
               `${day.date} ${booking.start}`
@@ -1217,9 +1218,7 @@ export default class BookingsManager {
       } else {
         bookings = await ScyllaDb.query(
           "fs_bookings",
-          "creatorId = :creatorId" + allTime
-            ? ""
-            : " AND startTime BETWEEN :start AND :end",
+          "creatorId = :creatorId AND startTime BETWEEN :start AND :end",
           {
             ":creatorId": `${creatorId}`,
             ":start": startIso,
@@ -1394,7 +1393,6 @@ export default class BookingsManager {
       }
 
       const row = result;
-      console.log("🚀 ~ BookingsManager ~ getUserIdFromBooking ~ row:", row);
       const userId = String(role === "fan" ? row.user_ID : row.creatorId);
 
       if (!userId) {
@@ -1704,7 +1702,6 @@ export default class BookingsManager {
       const result = await ScyllaDb.getItem("fs_bookings", {
         booking_ID: String(bookingId),
       });
-      console.log("🚀 ~ BookingsManager ~ getBookingDetails ~ result:", result);
       return result;
     } catch (e) {
       console.error("Error in getBookingDetails:", e);
@@ -1760,6 +1757,10 @@ export default class BookingsManager {
     }
   }
   static async registerReadyState(bookingId, userType) {
+    console.log(
+      "🚀 ~ BookingsManager ~ registerReadyState ~ bookingId:",
+      bookingId
+    );
     if (!bookingId || !["fan", "creator"].includes(userType)) {
       return false;
     }

@@ -34,6 +34,7 @@ export async function handleGetRollingWorkWindows(req, res) {
     res.status(500).send("Internal Server Error");
   }
 }
+
 export async function handleGetResolveEffectiveHours(req, res) {
   try {
     // Assuming you have a service function for resolving effective hours
@@ -70,7 +71,6 @@ export async function handleGetgetCreatorBookingSettings(req, res) {
 export async function handleGetCreatorBookings(req, res) {
   try {
     const creatorId = req.query.creatorId; // Assuming creatorId is passed as a query parameter
-    console.log("🚀 ~ handleGetCreatorBookings ~ creatorId:", creatorId);
     const bookingSettings = await getCreatorBookings(creatorId);
     res.json(bookingSettings);
   } catch (error) {
@@ -162,7 +162,6 @@ export async function handleCreateBooking(req, res) {
     initialTokenCharge = [],
     recurrenceRule = null,
   } = req.body;
-  console.log("🚀 ~ handleCreateBooking ~ req:", req.body );
 
   try {
     const booking = await createBooking(
@@ -212,7 +211,7 @@ export async function handleCalculatePrice(req, res) {
   }
 }
 
-export async function handleDoesAppointmentCrossOver(res, req) {
+export async function handleDoesAppointmentCrossOver(req, res) {
   try {
     const {
       creatorId,

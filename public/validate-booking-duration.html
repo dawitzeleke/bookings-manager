@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Validate Booking Duration</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        background: #f9f9f9;
+      }
+
+      .container {
+        max-width: 500px;
+        width: 100%;
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        margin-top: 20px;
+        white-space: pre-wrap;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Validate Booking Duration</h2>
+      <form id="form">
+        <label>
+          Creator ID:
+          <input type="text" id="creatorId" value="123" />
+        </label>
+        <label>
+          Booking Start:
+          <input type="datetime-local" id="bookingStart" />
+        </label>
+        <label>
+          Booking End:
+          <input type="datetime-local" id="bookingEnd" />
+        </label>
+        <label>
+          Min Booking Time (minutes):
+          <input type="number" id="minTime" value="15" />
+        </label>
+        <label>
+          Max Booking Time (minutes):
+          <input type="number" id="maxTime" value="90" />
+        </label>
+        <button type="submit">Validate</button>
+      </form>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const form = document.getElementById("form");
+      const output = document.getElementById("output");
+
+      // Set default booking start and end (now and +30 mins)
+      const now = new Date();
+      const plus30 = new Date(now.getTime() + 30 * 60000);
+      const pad = (n) => n.toString().padStart(2, "0");
+
+      const toLocalDatetime = (d) =>
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+          d.getHours()
+        )}:${pad(d.getMinutes())}`;
+
+      document.getElementById("bookingStart").value = toLocalDatetime(now);
+      document.getElementById("bookingEnd").value = toLocalDatetime(plus30);
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const creatorId = document.getElementById("creatorId").value;
+        const bookingStart = document.getElementById("bookingStart").value;
+        const bookingEnd = document.getElementById("bookingEnd").value;
+        const minTime = parseInt(document.getElementById("minTime").value);
+        const maxTime = parseInt(document.getElementById("maxTime").value);
+
+        const bookingSettings = {
+          min_booking_time: minTime,
+          max_booking_time: maxTime,
+        };
+
+        try {
+          const res = await fetch(
+            `api/validateBookingDuration?creatorId=${encodeURIComponent(
+              creatorId
+            )}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingStart,
+                bookingEnd,
+                bookingSettings,
+              }),
+            }
+          );
+
+          const result = await res.json();
+          output.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          output.textContent = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

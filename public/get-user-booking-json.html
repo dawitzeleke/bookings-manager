@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Get User Booking JSON</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        background: #f9f9f9;
+      }
+
+      .container {
+        max-width: 500px;
+        width: 100%;
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        margin-top: 20px;
+        white-space: pre-wrap;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Get User Booking JSON</h2>
+      <form id="form">
+        <label
+          >Creator ID:
+          <input type="text" id="creatorId" value="123" />
+        </label>
+
+        <label
+          >Booking Window (minutes):
+          <input type="number" id="bookingWindow" value="1440" />
+        </label>
+
+        <label
+          >Timezone:
+          <input type="text" id="timezone" value="Africa/Addis_Ababa" />
+        </label>
+
+        <button type="submit">Fetch</button>
+      </form>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const form = document.getElementById("form");
+      const output = document.getElementById("output");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const creatorId = document.getElementById("creatorId").value;
+        const bookingSettings = {
+          booking_window_in_minutes: parseInt(
+            document.getElementById("bookingWindow").value,
+            10
+          ),
+          timezone: document.getElementById("timezone").value,
+        };
+
+        try {
+          const res = await fetch("api/getUserBookingJson", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              creatorId,
+              bookingSettings,
+            }),
+          });
+
+          const result = await res.json();
+          output.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          output.textContent = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

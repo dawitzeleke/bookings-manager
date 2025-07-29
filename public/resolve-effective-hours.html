@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Resolve Effective Hours</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        background: #f5f7fa;
+      }
+
+      .container {
+        max-width: 480px;
+        width: 100%;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-top: 14px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 10px 18px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      pre {
+        background: #f0f0f0;
+        padding: 12px;
+        margin-top: 24px;
+        white-space: pre-wrap;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Resolve Effective Hours</h2>
+      <form id="form">
+        <label
+          >Default Start Time:
+          <input type="time" id="defaultStart" value="08:00:00" />
+        </label>
+
+        <label
+          >Default End Time:
+          <input type="time" id="defaultEnd" value="16:00:00" />
+        </label>
+
+        <label
+          >After-hours Start Time:
+          <input type="time" id="afterStart" value="23:00:00" />
+        </label>
+
+        <label
+          >After-hours End Time:
+          <input type="time" id="afterEnd" value="23:59:00" />
+        </label>
+
+        <button type="submit">Resolve</button>
+      </form>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const form = document.getElementById("form");
+      const output = document.getElementById("output");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const bookingSettings = {
+          default_working_hours: {
+            start: document.getElementById("defaultStart").value,
+            end: document.getElementById("defaultEnd").value,
+          },
+          after_hours: {
+            start: document.getElementById("afterStart").value,
+            end: document.getElementById("afterEnd").value,
+          },
+        };
+
+        try {
+          const res = await fetch("api/resolveEffectiveHours", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bookingSettings }),
+          });
+
+          const result = await res.json();
+          output.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          output.textContent = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

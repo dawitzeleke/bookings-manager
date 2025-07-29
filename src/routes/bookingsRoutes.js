@@ -12,7 +12,6 @@ import {
   handleGetIsUserExistsAndValid,
   handleGetOfflineHours,
   handleGetResolveEffectiveHours,
-  handleGetRollingWorkWindows,
   handleGetUpcomingBookings,
   handleGetUpcomingBookingSessions,
   handleGetUserBookingJson,
@@ -27,20 +26,20 @@ import {
 } from "../controllers/bookingsController.js";
 const router = express.Router();
 
-router.get("/getRollingWorkWindows", handleGetRollingWorkWindows);
-router.get("/resolveEffectiveHours", handleGetResolveEffectiveHours);
+// router.get("/getRollingWorkWindows", handleGetRollingWorkWindows);
+router.post("/resolveEffectiveHours", handleGetResolveEffectiveHours);
 router.get("/isUserExistsAndValid", handleGetIsUserExistsAndValid);
 router.get("/getCreatorBookingSettings", handleGetgetCreatorBookingSettings);
 router.get("/getCreatorBookings", handleGetCreatorBookings);
-router.get("/isCreatorBookingSuspended", handleGetIsCreatorBookingSuspended);
-router.get("/validateBookingDuration", handleValidateBookingDuration);
+router.post("/isCreatorBookingSuspended", handleGetIsCreatorBookingSuspended);
+router.post("/validateBookingDuration", handleValidateBookingDuration);
 router.get("/getOfflineHours", handleGetOfflineHours);
 router.post("/isBookingWithinOfflineHours", handleIsBookingWithinOfflineHours);
 router.post("/createBooking", handleCreateBooking);
-router.get("/calculatePrice", handleCalculatePrice);
-router.get("/doesAppointmentCrossOver", handleDoesAppointmentCrossOver);
+router.post("/calculatePrice", handleCalculatePrice);
+router.post("/doesAppointmentCrossOver", handleDoesAppointmentCrossOver);
 router.post("/isRequestedTimeAvailable", handleIsRequestedTimeAvailable);
-router.get("/getUserBookingJson", handleGetUserBookingJson);
+router.post("/getUserBookingJson", handleGetUserBookingJson);
 router.patch("/updateBookingSettings", handleUpdateBookingSettings);
 // router.get('/validateAndSanitizeBookingSettings', handleValidateAndSanitizeBookingSettings);
 router.post("/getUserIdFromBooking", handleGetUserIdFromBooking);

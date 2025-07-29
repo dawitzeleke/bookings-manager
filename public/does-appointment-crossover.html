@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Does Appointment Cross Over</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+      }
+      label {
+        display: block;
+        margin: 10px 0 4px;
+      }
+      input {
+        width: 100%;
+        padding: 6px;
+        margin-bottom: 10px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      pre {
+        background: #f1f1f1;
+        padding: 10px;
+        white-space: pre-wrap;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Does Appointment Cross Over</h2>
+    <form id="form">
+      <label for="creatorId">Creator ID</label>
+      <input id="creatorId" name="creatorId" value="123" />
+
+      <label for="date">Date</label>
+      <input id="date" name="date" type="date" value="2025-07-29" />
+
+      <label for="appointmentStart">Appointment Start</label>
+      <input
+        id="appointmentStart"
+        name="appointmentStart"
+        type="time"
+        value="15:00:00"
+      />
+
+      <label for="appointmentEnd">Appointment End</label>
+      <input
+        id="appointmentEnd"
+        name="appointmentEnd"
+        type="time"
+        value="17:00:00"
+      />
+
+      <label for="defaultStart">Default Working Start</label>
+      <input
+        id="defaultStart"
+        name="defaultStart"
+        type="time"
+        value="09:00:00"
+      />
+
+      <label for="defaultEnd">Default Working End</label>
+      <input id="defaultEnd" name="defaultEnd" type="time" value="17:00:00" />
+
+      <label for="afterStart">After Hours Start</label>
+      <input id="afterStart" name="afterStart" type="time" value="20:00:00" />
+
+      <label for="afterEnd">After Hours End</label>
+      <input id="afterEnd" name="afterEnd" type="time" value="23:00:00" />
+
+      <button type="submit">Check</button>
+    </form>
+
+    <pre id="result"></pre>
+
+    <script>
+      document.getElementById("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const creatorId = document.getElementById("creatorId").value;
+        const date = document.getElementById("date").value;
+        const appointmentStart =
+          document.getElementById("appointmentStart").value;
+        const appointmentEnd = document.getElementById("appointmentEnd").value;
+        const defaultStart = document.getElementById("defaultStart").value;
+        const defaultEnd = document.getElementById("defaultEnd").value;
+        const afterStart = document.getElementById("afterStart").value;
+        const afterEnd = document.getElementById("afterEnd").value;
+
+        const payload = {
+          creatorId,
+          appointmentStart,
+          appointmentEnd,
+          date,
+          bookingSettings: {
+            default_working_hours: {
+              start: defaultStart,
+              end: defaultEnd,
+            },
+            after_hours: {
+              start: afterStart,
+              end: afterEnd,
+            },
+          },
+        };
+
+        const response = await fetch("api/doesAppointmentCrossOver", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+        document.getElementById("result").textContent = JSON.stringify(
+          result,
+          null,
+          2
+        );
+      });
+    </script>
+  </body>
+</html>

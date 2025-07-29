@@ -74,7 +74,6 @@ async function main() {
       console.log(`Table ${tableName} does not exist in ScyllaDB, creating...`);
       const schema = ScyllaDb.getSchemaFromConfig(tableName);
       schema.TableName = tableName;
-      console.log("🚀 ~ main ~ schema:", schema);
 
       await ScyllaDb.createTable(schema);
     } else {

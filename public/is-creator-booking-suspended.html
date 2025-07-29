@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Is Creator Booking Suspended</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        background: #f9f9f9;
+      }
+
+      .container {
+        max-width: 500px;
+        width: 100%;
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        margin-top: 20px;
+        white-space: pre-wrap;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Check if Creator Booking is Suspended</h2>
+      <form id="form">
+        <label>
+          Creator ID:
+          <input type="text" id="creatorId" value="abc123" />
+        </label>
+        <label>
+          Date:
+          <input type="date" id="date" value="2025-07-29" />
+        </label>
+        <label>
+          Booking Settings (suspensions only):
+          <input
+            type="text"
+            id="bookingSettings"
+            value='{"suspensions":[{"status":"active","start_date":"2025-07-28","end_date":"2025-07-30"}]}'
+          />
+        </label>
+        <button type="submit">Check</button>
+      </form>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const form = document.getElementById("form");
+      const output = document.getElementById("output");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const creatorId = document.getElementById("creatorId").value;
+        const date = document.getElementById("date").value;
+        const bookingSettingsInput =
+          document.getElementById("bookingSettings").value;
+
+        let bookingSettings;
+        try {
+          bookingSettings = JSON.parse(bookingSettingsInput);
+        } catch (err) {
+          output.textContent = "Invalid JSON in booking settings.";
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `api/isCreatorBookingSuspended?creatorId=${encodeURIComponent(
+              creatorId
+            )}&date=${encodeURIComponent(date)}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ bookingSettings }),
+            }
+          );
+
+          const result = await res.json();
+          output.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          output.textContent = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

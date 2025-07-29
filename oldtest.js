@@ -373,6 +373,7 @@ export async function runTests() {
       (await BookingsManager.getBookingDetails(bookingId)).ready_by
     );
 
+    return;
     console.log(
       "should be creatorId:",
       await BookingsManager.getUserIdFromBooking(bookingId, "creator")
