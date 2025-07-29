@@ -7,7 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ScyllaDb from "./scylla/ScyllaDb.js";
 
-const shouldReset = true;
+const shouldReset = false;
 async function resetDB() {
   const tables = await ScyllaDb.listTables();
 
@@ -560,8 +560,8 @@ export default class BookingsManager {
     }
 
     // Sanitize/normalize inputs
-    fanId = parseInt(fanId);
-    creatorId = parseInt(creatorId);
+    fanId = String(fanId);
+    creatorId = String(creatorId);
     bookingDate = sanitizeTextField(bookingDate);
     bookingStart = sanitizeTextField(bookingStart);
     bookingEnd = sanitizeTextField(bookingEnd);
@@ -1372,11 +1372,11 @@ export default class BookingsManager {
     return validatedSettings;
   }
   static async getUserIdFromBooking(bookingId, role) {
-    const booking_id = parseInt(bookingId);
+    const booking_id = String(bookingId);
     if (!booking_id || (role !== "fan" && role !== "creator")) return false;
 
-    if (this.userIdFromBooking[booking_id]) {
-      return this.userIdFromBooking[booking_id];
+    if (this.userIdFromBooking[role + booking_id]) {
+      return this.userIdFromBooking[role + booking_id];
     }
 
     try {
@@ -1390,14 +1390,15 @@ export default class BookingsManager {
       }
 
       const row = result;
-      const userId = parseInt(role === "fan" ? row.fanId : row.creatorId);
+      console.log("🚀 ~ BookingsManager ~ getUserIdFromBooking ~ row:", row);
+      const userId = String(role === "fan" ? row.user_ID : row.creatorId);
 
       if (!userId) {
-        this.userIdFromBooking[booking_id] = false;
+        this.userIdFromBooking[role + booking_id] = false;
         return false;
       }
 
-      this.userIdFromBooking[booking_id] = userId;
+      this.userIdFromBooking[role + booking_id] = userId;
       return String(userId);
     } catch (error) {
       console.error("Error in getUserIdFromBooking:", error.message);

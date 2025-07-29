@@ -178,7 +178,6 @@ export async function runTests() {
         }
       )
     );
-    return;
 
     console.log(
       "should not be available",
@@ -274,7 +273,7 @@ export async function runTests() {
     const bookingId = await BookingsManager.createBooking(
       userId, // fanId
       creatorId, // creatorId
-      "2025-07-06", // bookingDate
+      "2025-08-06", // bookingDate
       "10:01:00", // bookingStart
       "10:55:00", // bookingEnd
       10.0, // baseCharge
@@ -313,6 +312,7 @@ export async function runTests() {
       "should be many bookings ",
       (await BookingsManager.getUpcomingBookings(creatorId, 500000000)).length
     );
+
     const oldReccurenceBookId = await BookingsManager.createBooking(
       userId,
       creatorId,
@@ -681,7 +681,6 @@ export async function runTests() {
         15 // buffer in minutes
       )
     );
-    return;
   } catch (err) {
     console.error("❌ Test failed:", err);
   }

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Booking</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+      }
+
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        box-sizing: border-box;
+      }
+      .loading {
+        display: none;
+        margin-top: 12px;
+        color: #555;
+      }
+      .response {
+        margin-top: 16px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Create Booking</h2>
+    <form id="bookingForm">
+      <label
+        >Fan ID:
+        <input type="text" name="fanId" value="12345" required />
+      </label>
+      <label
+        >Creator ID:
+        <input type="text" name="creatorId" value="123" required />
+      </label>
+      <label
+        >Booking Date:
+        <input type="date" name="bookingDate" value="2000-07-05" required />
+      </label>
+      <label
+        >Booking Start:
+        <input type="time" name="bookingStart" value="12:01:00" required />
+      </label>
+      <label
+        >Booking End:
+        <input type="time" name="bookingEnd" value="12:33:00" required />
+      </label>
+      <label
+        >Base Charge:
+        <input
+          type="number"
+          step="0.01"
+          name="baseCharge"
+          value="10.0"
+          required
+        />
+      </label>
+      <label
+        >Negotiation Phase:
+        <select name="negotiationPhase">
+          <option value="false" selected>No</option>
+          <option value="true">Yes</option>
+        </select>
+      </label>
+      <label
+        >Initial Token Charge (JSON array):
+        <textarea name="initialTokenCharge" rows="3">
+[{ "type": "token", "amount": "10" }, { "type": "fee", "amount": "2" }]
+      </textarea
+        >
+      </label>
+      <label
+        >Recurrence Rule:
+        <input type="text" name="recurrenceRule" value="FREQ=YEARLY;COUNT=30" />
+      </label>
+
+      <button type="submit">Submit Booking</button>
+      <div class="loading" id="loading">Submitting...</div>
+      <div class="response" id="response"></div>
+    </form>
+
+    <script>
+      const form = document.getElementById("bookingForm");
+      const loading = document.getElementById("loading");
+      const responseBox = document.getElementById("response");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loading.style.display = "block";
+        responseBox.textContent = "";
+
+        const formData = new FormData(form);
+        const payload = {
+          fanId: formData.get("fanId"),
+          creatorId: formData.get("creatorId"),
+          bookingDate: formData.get("bookingDate"),
+          bookingStart: formData.get("bookingStart"),
+          bookingEnd: formData.get("bookingEnd"),
+          baseCharge: parseFloat(formData.get("baseCharge")),
+          negotiationPhase: formData.get("negotiationPhase") === "true",
+          initialTokenCharge: JSON.parse(
+            formData.get("initialTokenCharge") || "[]"
+          ),
+          recurrenceRule: formData.get("recurrenceRule") || null,
+        };
+
+        try {
+          const res = await fetch("api/createBooking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const result = await res.json();
+          responseBox.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          responseBox.textContent = "Error: " + err.message;
+        } finally {
+          loading.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

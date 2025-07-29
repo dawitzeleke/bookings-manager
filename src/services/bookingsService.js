@@ -119,7 +119,7 @@ export async function createBooking(
     recurrenceRule = null
   ){
     try {
-        const booking = await BookingsManager.createBooking({
+        const booking = await BookingsManager.createBooking(
             fanId,
             creatorId,
             bookingDate,
@@ -129,7 +129,7 @@ export async function createBooking(
             negotiationPhase,
             initialTokenCharge,
             recurrenceRule
-        });
+        );
         return booking;
     } catch (error) {
         console.error("Error creating booking:", error);
