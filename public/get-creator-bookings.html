@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Get Creator Bookings</title>
+    <style>
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      body {
+        max-width: 1200px;
+        margin: auto;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      label {
+        display: block;
+        margin: 10px 0 5px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .response {
+        white-space: pre-wrap;
+        background: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Get Creator Bookings</h2>
+    <form id="bookingForm">
+      <label for="creatorId">Creator ID</label>
+      <input value="123" type="text" id="creatorId" name="creatorId" required />
+
+      <button type="submit">Fetch Bookings</button>
+    </form>
+
+    <div id="response" class="response"></div>
+
+    <script>
+      const form = document.getElementById("bookingForm");
+      const responseEl = document.getElementById("response");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const creatorId = document.getElementById("creatorId").value;
+        responseEl.textContent = "Loading...";
+
+        try {
+          const res = await fetch(
+            `/api/getCreatorBookings?creatorId=${encodeURIComponent(creatorId)}`
+          );
+          const data = await res.json();
+          responseEl.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          responseEl.textContent = "Error fetching bookings.";
+        }
+      });
+    </script>
+  </body>
+</html>

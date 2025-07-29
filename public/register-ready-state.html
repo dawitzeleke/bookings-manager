@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register Ready State</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 500px;
+        margin: 40px auto;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 16px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .loading {
+        display: none;
+        margin-top: 12px;
+        color: #555;
+      }
+      .response {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        background-color: #f8f8f8;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Register Ready State</h2>
+    <form id="readyForm">
+      <label
+        >Booking ID:
+        <input type="text" name="bookingId" required placeholder="e.g. 12345" />
+      </label>
+
+      <label
+        >User Type:
+        <select name="userType" required>
+          <option value="">Select user type</option>
+          <option value="fan">fan</option>
+          <option value="creator">creator</option>
+        </select>
+      </label>
+
+      <button type="submit">Submit</button>
+      <div class="loading" id="loading">Registering...</div>
+      <div class="response" id="response"></div>
+    </form>
+
+    <script>
+      const form = document.getElementById("readyForm");
+      const loading = document.getElementById("loading");
+      const responseBox = document.getElementById("response");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loading.style.display = "block";
+        responseBox.textContent = "";
+
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        try {
+          const res = await fetch("/api/registerReadyState", {
+            method: "POST", // Per your backend
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data), // Unusual for GET, but your server expects it
+          });
+
+          const result = await res.json();
+          responseBox.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          responseBox.textContent = "Error: " + err.message;
+        } finally {
+          loading.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

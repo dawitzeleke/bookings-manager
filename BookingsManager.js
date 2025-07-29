@@ -551,6 +551,10 @@ export default class BookingsManager {
     initialTokenCharge = [],
     recurrenceRule = null
   ) {
+    console.log(
+      "🚀 ~ BookingsManager ~ createBooking ~ initialTokenCharge:",
+      initialTokenCharge
+    );
     // Basic validation
     if (!fanId || !creatorId || !bookingDate || !bookingStart || !bookingEnd) {
       return {
@@ -568,7 +572,7 @@ export default class BookingsManager {
     baseCharge = parseFloat(baseCharge);
     negotiationPhase = Boolean(negotiationPhase);
     initialTokenCharge = Array.isArray(initialTokenCharge)
-      ? initialTokenCharge.map(sanitizeTextField)
+      ? initialTokenCharge
       : [];
     recurrenceRule = recurrenceRule ? sanitizeTextField(recurrenceRule) : null;
 
@@ -1432,7 +1436,6 @@ export default class BookingsManager {
   }
 
   static async updateBookingStatus(bookingId, newStatus) {
-    console.log(bookingId, newStatus, "---------------");
     // Return false if bookingId or newStatus is invalid
     if (
       !bookingId ||
@@ -1701,6 +1704,7 @@ export default class BookingsManager {
       const result = await ScyllaDb.getItem("fs_bookings", {
         booking_ID: String(bookingId),
       });
+      console.log("🚀 ~ BookingsManager ~ getBookingDetails ~ result:", result);
       return result;
     } catch (e) {
       console.error("Error in getBookingDetails:", e);
@@ -2532,42 +2536,34 @@ export default class BookingsManager {
     if (!userId) return [];
 
     userId = String(userId);
-    // Get the user's role (you'll need to implement this logic)
-    try {
-      const role = await Users.getUserRole(userId);
 
-      let indexName, indexKey;
-      if (role === "fan") {
-        indexName = "GSI2";
-        indexKey = "user_ID";
-      } else if (role === "creator") {
-        indexName = "GSI1";
-        indexKey = "creatorId";
-      } else {
-        console.error("Invalid user role:", role);
-        return false;
-      }
+    const rolesAndIndexes = [
+      { role: "fan", indexName: "GSI2", indexKey: "user_ID" },
+      { role: "creator", indexName: "GSI1", indexKey: "creatorId" },
+    ];
 
-      const bookings = await ScyllaDb.query(
-        "fs_bookings",
-        `#pk = :pk`,
-        { ":pk": userId },
-        {
-          IndexName: indexName,
-          ExpressionAttributeNames: { "#pk": indexKey },
-          ScanIndexForward: true, // ASC on sort key (startTime)
+    for (const { indexName, indexKey } of rolesAndIndexes) {
+      try {
+        const bookings = await ScyllaDb.query(
+          "fs_bookings",
+          `#pk = :pk`,
+          { ":pk": userId },
+          {
+            IndexName: indexName,
+            ExpressionAttributeNames: { "#pk": indexKey },
+            ScanIndexForward: true,
+          }
+        );
+
+        if (bookings && bookings.length > 0) {
+          return bookings;
         }
-      );
-
-      return bookings ?? [];
-    } catch (e) {
-      console.error("Error in getCreatorsBookings:", e);
-      return {
-        error: "internal_error",
-        message:
-          "An internal error occurred while retrieving creator's bookings.",
-      };
+      } catch (err) {
+        console.error(`Error querying with index ${indexName}:`, err);
+      }
     }
+
+    return [];
   }
 
   static async addAdminNote(bookingId, note) {

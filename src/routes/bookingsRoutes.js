@@ -46,11 +46,11 @@ router.patch("/updateBookingSettings", handleUpdateBookingSettings);
 router.post("/getUserIdFromBooking", handleGetUserIdFromBooking);
 router.get("/getBookingStatus", handleGetBookingStatus);
 router.patch("/updateBookingStatus", handleUpdateBookingStatus);
-router.get("/bookingExists", handleBookingExists);
+router.post("/bookingExists", handleBookingExists);
 router.get("/setBookingStatus", handleSetBookingStatus);
 router.post("/getUpcomingBookings", handleGetUpcomingBookings);
-router.get("/getBookingDetails", handleGetBookingDetails);
+router.post("/getBookingDetails", handleGetBookingDetails);
 router.get("/getUpcomingBookingSessions", handleGetUpcomingBookingSessions);
-router.get("/registerReadyState", handleRegisterReadyState);
+router.post("/registerReadyState", handleRegisterReadyState);
 
 export default router;

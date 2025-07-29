@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Update Booking Settings</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        max-width: 1200px;
+        padding: 5rem;
+        margin: auto;
+      }
+      label {
+        display: block;
+        margin: 10px 0 5px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        font-family: monospace;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .response {
+        white-space: pre-wrap;
+        background: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+      }
+
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Update Booking Settings</h2>
+    <form id="bookingForm">
+      <label for="userId">User ID (creator)</label>
+      <input type="number" id="userId" name="userId" value="123" required />
+
+      <label for="settingsObject">Settings Object (JSON)</label>
+      <textarea id="settingsObject" rows="10">
+{
+  "default_working_hours": {
+    "start": "10:00:00",
+    "end": "17:00:00"
+  },
+  "after_hours": {
+    "start": "18:00:00",
+    "end": "21:00:00"
+  },
+  "max_duration_minutes": 30,
+  "min_notice_minutes": 15
+}
+      </textarea>
+
+      <div>
+        <button type="submit">Update Settings</button>
+      </div>
+    </form>
+
+    <div id="response" class="response"></div>
+
+    <script>
+      const form = document.getElementById("bookingForm");
+      const responseEl = document.getElementById("response");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const userId = document.getElementById("userId").value;
+        const settingsJson = document.getElementById("settingsObject").value;
+
+        let settingsObject;
+        try {
+          settingsObject = JSON.parse(settingsJson);
+        } catch (err) {
+          responseEl.textContent = "Invalid JSON in settings object.";
+          return;
+        }
+
+        responseEl.textContent = "Loading...";
+
+        const res = await fetch("/api/updateBookingSettings", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            settingsObject,
+          }),
+        });
+
+        const data = await res.json();
+        responseEl.textContent = JSON.stringify(data, null, 2);
+      });
+    </script>
+  </body>
+</html>

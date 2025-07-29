@@ -118,6 +118,7 @@ export async function createBooking(
     initialTokenCharge = [],
     recurrenceRule = null
   ){
+    console.log("🚀 ~ createBooking ~ initialTokenCharge:", initialTokenCharge)
     try {
         const booking = await BookingsManager.createBooking(
             fanId,
